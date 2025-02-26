@@ -18,6 +18,7 @@ resource "aws_s3_bucket" "tetris_bucket" {
     Name        = "TetrisBucket"
     Environment = var.environment
   }
+} 
 resource "aws_eks_cluster" "eks-cluster" {
   name     = var.cluster-name
   role_arn = aws_iam_role.EKSClusterRole.arn
