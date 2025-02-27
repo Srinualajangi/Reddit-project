@@ -40,7 +40,7 @@ pipeline {
                 withAWS(credentials: 'aws-key', region: 'us-east-1') {
                 dir('EKS-TF') {
                     script {
-                        sh "rm -rf .terraform terraform.tfstate terraform.tfstate.backup; terraform init -backend=false -reconfigure; terraform plan -var-file=${params.'File-Name'}"
+                        sh "rm -rf .terraform terraform.tfstate terraform.tfstate.backup; terraform init; terraform plan -var-file=${params.'File-Name'}"
                     }
                 }
                 }
