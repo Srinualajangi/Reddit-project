@@ -40,7 +40,7 @@ pipeline {
                 withAWS(credentials: 'aws-key', region: 'us-east-1') {
                 dir('EKS-TF') {
                     script {
-                        sh "terraform refresh;terraform state list; terraform plan -var-file=${params.'File-Name'}"
+                        sh "terraform refresh -var-file=variables.tfvars; terraform state list; terraform plan -var-file=${params.'File-Name'}"
                     }
                 }
                 }
