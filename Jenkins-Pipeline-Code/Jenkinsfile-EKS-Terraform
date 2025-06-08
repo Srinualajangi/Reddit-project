@@ -5,6 +5,11 @@ properties([
     ])
 ])
 
+options {
+  ansiColor('xterm')
+}
+
+
 pipeline {
     agent any
     stages {
