@@ -34,7 +34,8 @@ pipeline {
                         java -version
                         ${SCANNER_HOME}/bin/sonar-scanner \
                             -Dsonar.projectName=Reddit \
-                            -Dsonar.projectKey=Reddit
+                            -Dsonar.projectKey=Reddit \
+                            -Dsonar.login=$SONAR_TOKEN
                     '''
                 }
             }
