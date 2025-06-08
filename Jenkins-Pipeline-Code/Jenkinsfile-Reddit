@@ -43,7 +43,7 @@ pipeline {
         }
         stage("quality gate") {
             steps {
-                script {
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
             }
