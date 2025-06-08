@@ -28,15 +28,16 @@ pipeline {
         stage("Sonarqube Analysis ") {
             steps {
                 withSonarQubeEnv('sonar-scanner') {
-                    sh '''
-                        export JAVA_HOME=${JAVA_HOME}
-                        export PATH=$JAVA_HOME/bin:$PATH
-                        java -version
-                        ${SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectName=Reddit \
-                            -Dsonar.projectKey=Reddit \
-                            -Dsonar.login=$SONAR_TOKEN
-                    '''
+                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            export JAVA_HOME=${JAVA_HOME}
+                            export PATH=$JAVA_HOME/bin:$PATH
+                            ${SCANNER_HOME}/bin/sonar-scanner \
+                                -Dsonar.projectName=Reddit \
+                                -Dsonar.projectKey=Reddit \
+                                -Dsonar.login=$SONAR_TOKEN
+                        '''
+                    }
                 }
             }
         }
