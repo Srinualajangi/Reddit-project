@@ -41,19 +41,6 @@ pipeline {
                 }
             }
         }
-        // stage("quality gate") {
-        //     steps {
-        //         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
-        //         }
-        //     }
-        // }
-        // stage('OWASP FS SCAN') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-        //         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-        //     }
-        // }
         stage('TRIVY FS SCAN') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
@@ -65,14 +52,16 @@ pipeline {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
                         sh "docker build -t reddit ."
                         sh "docker tag reddit srinualajangi/reddit:${BUILD_NUMBER}"
+                        sh "docker tag reddit srinualajangi/reddit:latest"
                         sh "docker push srinualajangi/reddit:${BUILD_NUMBER}"
+                        sh "docker push srinualajangi/reddit:latest"
                     }
                 }
             }
         }
         stage("TRIVY") {
             steps {
-                sh "trivy image srinualajangi/reddit:latest > trivy.txt"
+                sh "trivy image srinualajangi/reddit:${BUILD_NUMBER} > trivy.txt"
             }
         }
         stage('Update Deployment file') {
