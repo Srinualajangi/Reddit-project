@@ -6,6 +6,8 @@ pipeline{
     }
     environment {
         SCANNER_HOME=tool 'sonar-scanner'
+        JAVA_HOME = tool 'jdk'
+        PATH = "${JAVA_HOME}/bin:${SCANNER_HOME}/bin:${env.PATH}"
     }
     stages {
         stage('clean workspace'){
