@@ -1,22 +1,22 @@
-pipeline{
+pipeline {
     agent any
-    tools{
+    tools {
         jdk 'jdk'
         nodejs 'nodejs'
     }
     environment {
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
         JAVA_HOME = tool 'jdk'
         PATH = "${JAVA_HOME}/bin:${SCANNER_HOME}/bin:${env.PATH}"
     }
     stages {
-        stage('clean workspace'){
-            steps{
+        stage('clean workspace') {
+            steps {
                 cleanWs()
             }
         }
-        stage('Checkout from Git'){
-            steps{
+        stage('Checkout from Git') {
+            steps {
                 git branch: 'main', url: 'https://github.com/Srinualajangi/Reddit-project.git'
             }
         }
@@ -25,16 +25,22 @@ pipeline{
                 sh "npm install"
             }
         }
-        stage("Sonarqube Analysis "){
-            steps{
+        stage("Sonarqube Analysis ") {
+            steps {
                 withSonarQubeEnv('sonar-scanner') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Reddit \
-                    -Dsonar.projectKey=Reddit '''
+                    sh '''
+                        export JAVA_HOME=${JAVA_HOME}
+                        export PATH=$JAVA_HOME/bin:$PATH
+                        java -version
+                        ${SCANNER_HOME}/bin/sonar-scanner \
+                            -Dsonar.projectName=Reddit \
+                            -Dsonar.projectKey=Reddit
+                    '''
                 }
             }
         }
-        stage("quality gate"){
-           steps {
+        stage("quality gate") {
+            steps {
                 script {
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
@@ -51,19 +57,19 @@ pipeline{
                 sh "trivy fs . > trivyfs.txt"
             }
         }
-        stage("Docker Build & Push"){
-            steps{
-                script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh "docker build -t reddit ."
-                       sh "docker tag reddit srinualajangi/reddit:${BUILD_NUMBER} "
-                       sh "docker push srinualajangi/reddit:${BUILD_NUMBER} "
+        stage("Docker Build & Push") {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                        sh "docker build -t reddit ."
+                        sh "docker tag reddit srinualajangi/reddit:${BUILD_NUMBER}"
+                        sh "docker push srinualajangi/reddit:${BUILD_NUMBER}"
                     }
                 }
             }
         }
-        stage("TRIVY"){
-            steps{
+        stage("TRIVY") {
+            steps {
                 sh "trivy image srinualajangi/reddit:latest > trivy.txt"
             }
         }
@@ -73,7 +79,7 @@ pipeline{
                 GIT_USER_NAME = "Srinualajangi"
             }
             steps {
-                dir('K8s'){
+                dir('K8s') {
                     withCredentials([string(credentialsId: 'githubcred', variable: 'GITHUB_TOKEN')]) {
                         sh '''
                             git config user.email "srinualajangi99@gmail.com"
