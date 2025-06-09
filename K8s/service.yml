@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: reddit-clone-service
+  namespace: reddit-app
 spec:
   selector:
     app: reddit-clone
   ports:
-  - port: 80
-    targetPort: 3000
-    protocol: TCP
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
   type: LoadBalancer
-

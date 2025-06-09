@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: reddit-clone-deployment
+  namespace: reddit-app
   labels:
     app: reddit-clone
 spec:
@@ -15,7 +16,7 @@ spec:
         app: reddit-clone
     spec:
       containers:
-      - name: reddit-clone
-        image: srinualajangi/reddit:22
-        ports:
-        - containerPort: 3000
+        - name: reddit-clone
+          image: srinualajangi/reddit:22
+          ports:
+            - containerPort: 3000
